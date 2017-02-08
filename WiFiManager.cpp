@@ -189,8 +189,12 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
   while(1){
 
     // check if timeout
-    if(configPortalHasTimeout()) break;
-
+    if(configPortalHasTimeout()){
+      DEBUG_WM(F("ConfigPortal timed out"));      
+      WiFi.mode(WIFI_STA);
+      break;
+    }
+    
     //DNS
     dnsServer->processNextRequest();
     //HTTP
