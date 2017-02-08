@@ -172,7 +172,7 @@ boolean WiFiManager::startConfigPortal() {
 
 boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPassword) {
   //setup AP
-  WiFi.mode(WIFI_AP_STA);
+  wifimode(WIFI_AP_STA);
   DEBUG_WM("SET AP STA");
 
   _apName = apName;
@@ -191,10 +191,10 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
     // check if timeout
     if(configPortalHasTimeout()){
       DEBUG_WM(F("ConfigPortal timed out"));      
-      WiFi.mode(WIFI_STA);
+      wifimode(WIFI_STA);
       break;
     }
-    
+
     //DNS
     dnsServer->processNextRequest();
     //HTTP
@@ -211,7 +211,7 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
         DEBUG_WM(F("Failed to connect."));
       } else {
         //connected
-        WiFi.mode(WIFI_STA);
+        wifimode(WIFI_STA);
         //notify that configuration has changed and any optional parameters should be saved
         if ( _savecallback != NULL) {
           //todo: check if any custom parameters actually exist, and check if they really changed maybe
@@ -783,4 +783,18 @@ String WiFiManager::toStringIp(IPAddress ip) {
   }
   res += String(((ip >> 8 * 3)) & 0xFF);
   return res;
+}
+
+/**
+ * toggle mode, non persistant
+ * @param m WiFiMode_t
+ */
+bool WiFiManager::wifimode(WiFiMode_t m) {
+    DEBUG_WM(F("changing wifi mode non persistant"));
+    if(wifi_get_opmode() == (uint8) m) {
+        return true;
+    }
+    ETS_UART_INTR_DISABLE();
+    return wifi_set_opmode_current(m);
+    ETS_UART_INTR_ENABLE();
 }
