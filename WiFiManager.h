@@ -161,7 +161,7 @@ class WiFiManager
     void          handle204();
     boolean       captivePortal();
     boolean       configPortalHasTimeout();
-
+    bool          wifimode(WiFiMode_t m);
     // DNS server
     const byte    DNS_PORT = 53;
 
